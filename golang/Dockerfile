@@ -1,16 +1,11 @@
 FROM golang:1.12.7
 
-RUN apt update
-
-RUN useradd -ms /bin/bash go-online
-
-RUN echo "root:root" | chpasswd
+RUN apt update && useradd -ms /bin/bash go-online && echo "root:root" | chpasswd && \
+    apt-get install -y zsh && apt-get install -y wget git
 
 ENTRYPOINT ["/main"]
-RUN apt-get install -y zsh && apt-get install -y wget
-RUN apt-get install -y git
 USER go-online
-RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh
-RUN export TERM=xterm && echo "unsetopt PROMPT_SP" >> ~/.zshrc
+RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh && \
+    export TERM=xterm && echo "unsetopt PROMPT_SP" >> ~/.zshrc
 
 ENV LANG=C.UTF-8
