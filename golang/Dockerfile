@@ -1,7 +1,7 @@
 FROM golang:1.12.7
 
 RUN apt update && useradd -ms /bin/bash go-online && echo "root:root" | chpasswd && \
-    apt-get install -y zsh && apt-get install -y wget git
+    apt-get install -y zsh wget git
 
 ENTRYPOINT ["/main"]
 USER go-online
