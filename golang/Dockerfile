@@ -7,6 +7,7 @@ ENTRYPOINT ["/main"]
 USER go-online
 RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh && \
     export TERM=xterm && echo "unsetopt PROMPT_SP" >> ~/.zshrc
+USER root
 
 ENV LANG=C.UTF-8
 ENV TERM=xterm
