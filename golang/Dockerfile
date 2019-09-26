@@ -6,7 +6,7 @@ RUN apt update && useradd -ms /bin/bash go-online && echo "root:root" | chpasswd
 ENTRYPOINT ["/main"]
 USER go-online
 RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh && \
-    export TERM=xterm && echo "unsetopt PROMPT_SP" >> ~/.zshrc
+    export TERM=xterm
 USER root
 
 ENV LANG=C.UTF-8
