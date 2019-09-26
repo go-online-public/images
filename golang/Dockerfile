@@ -9,5 +9,5 @@ RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -
     export TERM=xterm && echo "unsetopt PROMPT_SP" >> ~/.zshrc
 USER root
 
-ENV LANG=zh_CN.UTF-8
+ENV LANG=C.UTF-8
 ENV TERM=xterm
