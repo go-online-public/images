@@ -1,13 +1,15 @@
-FROM golang:1.12.7
-
-RUN apt update && useradd -ms /bin/bash go-online && echo "root:root" | chpasswd && \
-    apt-get install -y zsh wget git
-
-ENTRYPOINT ["/main"]
+FROM golang:1-alpine
+# 更改为华为源
+RUN sed -i "s@http://dl-cdn.alpinelinux.org/@https://repo.huaweicloud.com/@g" /etc/apk/repositories && \
+# 安装必备软件
+    apk update && apk add --no-cache zsh git && \
+# 添加运行时用户
+    adduser -D go-online && echo "root:root" | chpasswd
+# 添加zsh的配置
 USER go-online
-RUN wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | sh && \
-    export TERM=xterm
+ADD install.sh install.sh
+RUN cat install.sh | sh
+ENV LANG=C.UTF-8 TERM=xterm
+# 切回root用户
 USER root
-
-ENV LANG=C.UTF-8
-ENV TERM=xterm
+RUN rm install.sh

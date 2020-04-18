@@ -1,0 +1,57 @@
+kind: pipeline
+type: docker
+name: default
+
+steps:
+- name: publish_dev
+  image: docker:stable
+  volumes:
+  - name: target
+    path: /target
+  - name: docker
+    path: /var/run/docker.sock
+  when:
+    branch:
+      - dev
+    event:
+      - push
+  commands:
+  - docker login -u cn-south-1@ATNZR4XHGKWYJOAXBGAB -p 89d6cf30db0ff8e39d08a2470b12b241e1bf5ab236402624a793e1d92141d697 swr.cn-south-1.myhuaweicloud.com
+  - docker build --tag swr.cn-south-1.myhuaweicloud.com/go-online/cpp-env:dev -f cpp/Dockerfile .
+  - docker build --tag swr.cn-south-1.myhuaweicloud.com/go-online/golang-env:dev -f golang/Dockerfile .
+  - docker push swr.cn-south-1.myhuaweicloud.com/go-online/cpp-env:dev
+  - docker push swr.cn-south-1.myhuaweicloud.com/go-online/golang-env:dev
+  # remove docker image
+  - docker rmi swr.cn-south-1.myhuaweicloud.com/go-online/cpp-env:dev swr.cn-south-1.myhuaweicloud.com/go-online/golang-env:dev
+
+- name: publish_production
+  image: docker:stable
+  volumes:
+  - name: target
+    path: /target
+  - name: docker
+    path: /var/run/docker.sock
+  when:
+    event:
+      - tag
+  commands:
+  - docker login -u cn-south-1@ATNZR4XHGKWYJOAXBGAB -p 89d6cf30db0ff8e39d08a2470b12b241e1bf5ab236402624a793e1d92141d697 swr.cn-south-1.myhuaweicloud.com
+  - docker build --tag swr.cn-south-1.myhuaweicloud.com/go-online/cpp-env:$DRONE_TAG --tag swr.cn-south-1.myhuaweicloud.com/go-online/cpp-env:latest -f cpp/Dockerfile .
+  - docker build --tag swr.cn-south-1.myhuaweicloud.com/go-online/golang-env:$DRONE_TAG --tag swr.cn-south-1.myhuaweicloud.com/go-online/cpp-env:latest -f golang/Dockerfile .
+  - docker push swr.cn-south-1.myhuaweicloud.com/go-online/cpp-env:$DRONE_TAG
+  - docker push swr.cn-south-1.myhuaweicloud.com/go-online/golang-env:$DRONE_TAG
+  - docker push swr.cn-south-1.myhuaweicloud.com/go-online/cpp-env:$latest
+  - docker push swr.cn-south-1.myhuaweicloud.com/go-online/golang-env:$latest
+  # remove docker image
+  - docker rmi swr.cn-south-1.myhuaweicloud.com/go-online/cpp-env:$DRONE_TAG swr.cn-south-1.myhuaweicloud.com/go-online/golang-env:$DRONE_TAG
+  - docker rmi swr.cn-south-1.myhuaweicloud.com/go-online/cpp-env:latest swr.cn-south-1.myhuaweicloud.com/go-online/golang-env:latest
+
+volumes:
+- name: target
+  temp: {}
+- name: docker
+  host:
+    path: /var/run/docker.sock
+- name: kube_config
+  host:
+    path: /root/.kube
